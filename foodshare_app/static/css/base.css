@@ -1,0 +1,948 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --header-height: 74px;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header styles */
+.header {
+  background-color: #2c3e50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  height: var(--header-height);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
+  padding: 0;
+  margin-left: -1.5rem;
+  min-width: max-content;
+  overflow: visible;
+  position: relative;
+}
+
+.logo span {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.logo img {
+  display: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin-right: -1rem;
+}
+
+.nav-links > li {
+  padding: 0.5rem 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #ecf0f1;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  padding: 0.5rem 0;
+}
+
+.nav-links a:hover {
+  color: #3498db;
+}
+
+.nav-links a.active {
+  color: #3498db;
+}
+
+/* Mobile menu button */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  visibility: hidden;
+}
+
+/* Button styles */
+.btn-login,
+.btn-signup {
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-login {
+  background: transparent;
+  border: 2px solid #3498db;
+  color: white;
+}
+
+.btn-signup {
+  background: #3498db;
+  border: none;
+  color: white;
+}
+
+.btn-login:hover {
+  background: #3498db;
+  color: white;
+}
+
+.btn-signup:hover {
+  background: #2980b9;
+}
+
+/* User menu styles */
+.user-menu {
+  position: relative;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.user-profile:hover {
+  color: #3498db;
+}
+
+.user-menu:hover,
+.user-profile:hover {
+  background-color: transparent;
+}
+
+.username {
+  font-weight: 500;
+  color: inherit;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  display: none;
+  z-index: 1000;
+}
+
+.dropdown-menu a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+  background: #f8f9fa;
+  color: #3498db;
+}
+
+.dropdown-menu a i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Notifications styles */
+.header .notifications {
+  position: relative;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-right: 1rem;
+}
+
+.header .notification-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 1.25rem;
+  color: white;
+  transition: color 0.15s;
+}
+
+.header .notification-btn:hover {
+  color: #3498db;
+}
+
+.header .notification-btn i {
+  display: block;
+  color: inherit;
+}
+
+.header .notification-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #e74c3c;
+  color: white;
+  font-size: 0.75rem;
+  min-height: 18px;
+  min-width: 18px;
+  padding: 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translate(25%, -25%);
+}
+
+/* Footer styles */
+.footer {
+  background: #2c3e50;
+  color: white;
+  padding: 4rem 2rem 2rem;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.footer-section h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+  color: #3498db;
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+    visibility: visible;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    background: #2c3e50;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-right: 0;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0.5rem 0;
+    color: #ecf0f1;
+  }
+
+  .user-menu {
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    margin-top: 0.5rem;
+    background: #243747;
+  }
+
+  .dropdown-menu a {
+    color: #ecf0f1;
+  }
+
+  .dropdown-menu a:hover {
+    background: #34495e;
+    color: #3498db;
+  }
+
+  .notifications {
+    align-self: flex-start;
+    margin-right: 0;
+  }
+
+  .btn-login,
+  .btn-signup {
+    width: 100%;
+    text-align: center;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-container {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .notification-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 320px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: white;
+  }
+
+  .notification-list {
+    max-height: 50vh;
+  }
+}
+
+/* Zoom responsiveness */
+@media screen and (min-width: 769px) {
+  .nav-container {
+    padding: 1rem 2rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .logo span {
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+  }
+
+  .btn-login,
+  .btn-signup {
+    padding: clamp(0.3rem, 1vw, 0.5rem) clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(0.9rem, 1vw, 1rem);
+  }
+}
+
+/* High resolution screens */
+@media screen and (min-width: 1400px) {
+  .nav-container,
+  .footer-content,
+  .footer-bottom {
+    max-width: 1400px;
+  }
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  overflow-y: auto;
+}
+
+.modal-content {
+  position: relative;
+  background-color: white;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.3s ease;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#loginModal .modal-content {
+  top: 50%;
+}
+
+#signupModal .modal-content {
+  top: 50%;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.close {
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.3s ease;
+  padding: 0.25rem;
+  line-height: 1;
+  z-index: 1;
+}
+
+.close:hover {
+  color: #333;
+}
+
+.modal h2 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 0.875rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.form-group input:focus + i {
+  color: #3498db;
+}
+
+.form-group.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  margin-top: -0.25rem;
+}
+
+.form-group.checkbox label {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.form-group.checkbox input {
+  width: auto;
+  margin: 0;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.form-footer {
+  margin-top: 0.5rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.form-footer a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding: 0.25rem;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.form-footer a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+/* Modal responsive styles */
+@media screen and (max-width: 768px) {
+  .modal-content {
+    width: calc(100% - 2rem);
+    margin: 1rem;
+    position: relative;
+    left: 0;
+    top: 3rem;
+    transform: none;
+  }
+
+  #loginModal .modal-content,
+  #signupModal .modal-content {
+    top: 3rem;
+  }
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Adjust the last items in nav-links */
+.nav-links li:last-child,
+.nav-links li:nth-last-child(2) {
+  margin-left: auto;
+}
+
+/* Input with icon styles */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 12px;
+    color: #666;
+    font-size: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.input-with-icon input {
+    padding-left: 2.5rem !important;
+    width: 100%;
+}
+
+/* Add these styles for placeholder customization */
+::placeholder {
+    color: #bbb;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+:-ms-input-placeholder {
+    color: #bbb;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+::-ms-input-placeholder {
+    color: #bbb;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Notification Styles */
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-btn {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 1.25rem;
+    color: #3498db;
+    transition: color 0.15s;
+}
+
+.notification-btn:hover {
+    color: #2980b9;
+}
+
+.notification-btn i {
+    display: block;
+    color: inherit;
+}
+
+.notification-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 0.75rem;
+    min-height: 18px;
+    min-width: 18px;
+    padding: 2px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translate(25%, -25%);
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: -0.5rem;
+    width: 380px;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    transition: all 0.2s ease;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+}
+
+.notification-dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.notification-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.notification-count-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.notification-list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+.notification-empty,
+.notification-loading {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+.notification-empty i,
+.notification-loading .loading-spinner {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #9ca3af;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid #e5e7eb;
+    border-radius: 50%;
+    border-top-color: #3b82f6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.notification-item:hover {
+    background-color: #f9fafb;
+}
+
+.notification-item.unread {
+    background-color: #eff6ff;
+}
+
+.notification-item.unread:hover {
+    background-color: #dbeafe;
+}
+
+.notification-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background-color: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.notification-item.unread .notification-icon {
+    background-color: #dbeafe;
+}
+
+.notification-icon i {
+    font-size: 1rem;
+    color: #3b82f6;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-text {
+    font-size: 0.875rem;
+    color: #1f2937;
+    margin-bottom: 4px;
+    line-height: 1.25rem;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.notification-status {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    margin-left: 12px;
+    margin-top: 6px;
+}
+
+.notification-item:not(.unread) .notification-status {
+    display: none;
+}
+
+.notification-footer {
+    padding: 12px;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
+}
+
+.mark-all-read {
+    width: 100%;
+    padding: 8px;
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s;
+    text-align: center;
+}
+
+.mark-all-read:hover {
+    color: #2563eb;
+}
+
+/* Update user menu styles */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+/* Remove the background hover and add color hover instead */
+.user-profile:hover {
+  color: #3498db;
+}
+
+/* Remove any background color changes */
+.user-menu:hover,
+.user-profile:hover {
+  background-color: transparent;
+}
+
+/* Keep username color consistent */
+.username {
+  font-weight: 500;
+  color: inherit;
+}
+
+/* Make chevron icon inherit color */
+.user-profile i {
+  color: inherit;
+}
+
+/* Add medium screen adjustments */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .notifications {
+        margin-right: 0.5rem;
+    }
+
+    .notification-dropdown {
+        right: -0.5rem;
+    }
+}
+
+/* Update view all notifications link styles */
+.notification-footer .view-all {
+    color: #3498db;  /* Blue color by default for better readability */
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: block;
+    padding: 0.25rem;
+    transition: color 0.3s ease;
+}
+
+.notification-footer .view-all:hover {
+    color: #2980b9;  /* Darker blue on hover */
+    text-decoration: underline;
+}

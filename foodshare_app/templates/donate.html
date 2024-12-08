@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Donate - FoodShare Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/modal.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#submit-donation" class="nav-item" data-section="submit-donation">
+                <i class="fas fa-gift"></i>
+                <span>Submit a Donation</span>
+            </a>
+            <a href="#donation-history" class="nav-item" data-section="donation-history">
+                <i class="fas fa-history"></i>
+                <span>Donation History</span>
+            </a>
+            <a href="#edit-profile" class="nav-item" data-section="edit-profile">
+                <i class="fas fa-user-edit"></i>
+                <span>Edit Profile</span>
+            </a>
+            <a href="{% url 'logout' %}" class="nav-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="dashboard-section">
+            <h1>Welcome, {{ user.username }}</h1>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <i class="fas fa-box-open"></i>
+                    <div class="stat-info">
+                        <h3>Total Donations</h3>
+                        <p>{{ total_donations }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-info">
+                        <h3>Pending Donations</h3>
+                        <p>{{ pending_donations }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-info">
+                        <h3>Completed Donations</h3>
+                        <p>{{ completed_donations }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-donations">
+                <h2>Recent Donations</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Donation No.</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in recent_donations %}
+                            <tr>
+                                <td>#{{ donation.donation_no }}</td>
+                                <td>{{ donation.submission_date|date:"Y-m-d" }}</td>
+                                <td>
+                                    <span class="status-badge {{ donation.status }}">
+                                        {{ donation.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn-view" data-donation="{{ donation.donation_no }}">
+                                        View Details
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No donations found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Submit Donation Section -->
+        <section id="submit-donation" class="dashboard-section">
+            <h1>Submit a Donation</h1>
+            {% include 'includes/donation_form.html' %}
+        </section>
+
+        <!-- Donation History Section -->
+        <section id="donation-history" class="dashboard-section">
+            <h1>Donation History</h1>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Donation No.</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table content will be dynamically loaded -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <!-- Pagination controls will be dynamically loaded -->
+            </div>
+        </section>
+
+        <!-- Edit Profile Section -->
+        <section id="edit-profile" class="dashboard-section">
+            <h1>Edit Profile</h1>
+            <form id="profileForm" class="profile-form">
+                {% csrf_token %}
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="profileUsername">Username</label>
+                        <input type="text" id="profileUsername" name="username" value="{{ user.username }}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" name="email" value="{{ user.email }}" />
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+        </section>
+    </main>
+</div>
+
+<!-- Donation Details Modal -->
+<div id="donationDetailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Donation Details</h2>
+        <div id="donationDetails"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

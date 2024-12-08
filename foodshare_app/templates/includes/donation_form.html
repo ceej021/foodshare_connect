@@ -1,0 +1,241 @@
+{% load static %}
+
+<!-- Donation Form Container -->
+<div class="donation-form-wrapper">
+  <!-- Include Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      prefix: "df-",
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: "#f0f9ff",
+              100: "#e0f2fe",
+              200: "#bae6fd",
+              300: "#7dd3fc",
+              400: "#38bdf8",
+              500: "#0ea5e9",
+              600: "#0284c7",
+              700: "#0369a1",
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Scoped styles -->
+  <style>
+    .donation-form-wrapper .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .donation-form-wrapper .form-input:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    }
+    .donation-form-wrapper .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      outline: none;
+    }
+    .donation-form-wrapper .btn:focus {
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    }
+    .donation-form-wrapper .btn-primary {
+      background-color: #0284c7;
+      color: white;
+    }
+    .donation-form-wrapper .btn-primary:hover {
+      background-color: #0369a1;
+    }
+    .donation-form-wrapper .btn-danger {
+      background-color: #dc2626;
+      color: white;
+    }
+    .donation-form-wrapper .btn-danger:hover {
+      background-color: #b91c1c;
+    }
+  </style>
+
+  <div class="df-max-w-3xl df-mx-auto">
+    <div
+      class="df-bg-white df-rounded-2xl df-shadow-lg df-pt-4 df-px-6 df-pb-6 sm:df-px-8 sm:df-pb-8"
+    >
+      <h2
+        class="df-text-2xl df-font-semibold df-text-gray-800 df-text-center df-mb-4"
+        style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+      >
+        Food Donation Form
+      </h2>
+
+      <form
+        id="donationForm"
+        onsubmit="handleSubmit(event)"
+        class="df-space-y-8"
+      >
+        <!-- Donor Information -->
+        <section class="df-space-y-6 df-bg-gray-50 df-rounded-xl df-p-6">
+          <h2 class="df-text-xl df-font-semibold df-text-gray-900">
+            1. Donor Information
+          </h2>
+          <div class="df-space-y-4">
+            <div>
+              <label
+                for="fullName"
+                class="df-block df-text-sm df-font-medium df-text-gray-700 df-mb-1"
+                >Full Name *</label
+              >
+              <input type="text" id="fullName" required class="form-input" />
+            </div>
+            <div>
+              <label
+                for="contact"
+                class="df-block df-text-sm df-font-medium df-text-gray-700 df-mb-1"
+                >Contact Number *</label
+              >
+              <input type="tel" id="contact" required class="form-input" />
+            </div>
+            <div>
+              <label
+                for="email"
+                class="df-block df-text-sm df-font-medium df-text-gray-700 df-mb-1"
+                >Email Address *</label
+              >
+              <input type="email" id="email" required class="form-input" />
+            </div>
+            <div>
+              <label
+                for="address"
+                class="df-block df-text-sm df-font-medium df-text-gray-700 df-mb-1"
+                >Address *</label
+              >
+              <textarea
+                id="address"
+                rows="3"
+                required
+                class="form-input"
+              ></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Food Donation Details -->
+        <section class="df-space-y-6 df-bg-gray-50 df-rounded-xl df-p-6">
+          <h2 class="df-text-xl df-font-semibold df-text-gray-900">
+            2. Food Donation Details
+          </h2>
+          <div id="foodItems" class="df-space-y-4"></div>
+          <button
+            type="button"
+            onclick="addFoodItem()"
+            class="btn btn-primary df-inline-flex df-items-center"
+          >
+            <svg
+              class="df-w-5 df-h-5 df-mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            Add Food Item
+          </button>
+        </section>
+
+        <!-- Pickup/Dropoff Details -->
+        <section class="df-space-y-6 df-bg-gray-50 df-rounded-xl df-p-6">
+          <h2 class="df-text-xl df-font-semibold df-text-gray-900">
+            3. Pickup/Dropoff Details
+          </h2>
+          <div class="df-space-y-4">
+            <div class="df-flex df-space-x-6">
+              <label class="df-flex df-items-center">
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="ngo"
+                  onchange="toggleDeliveryOptions()"
+                  class="df-w-4 df-h-4 df-text-primary-600 df-border-gray-300"
+                />
+                <span class="df-ml-2 df-text-sm df-text-gray-700"
+                  >NGO Pickup</span
+                >
+              </label>
+              <label class="df-flex df-items-center">
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="self"
+                  onchange="toggleDeliveryOptions()"
+                  class="df-w-4 df-h-4 df-text-primary-600 df-border-gray-300"
+                />
+                <span class="df-ml-2 df-text-sm df-text-gray-700"
+                  >Self Delivery</span
+                >
+              </label>
+            </div>
+            <div id="deliveryOptions" class="df-space-y-4"></div>
+          </div>
+        </section>
+
+        <!-- Additional Information -->
+        <section class="df-space-y-6 df-bg-gray-50 df-rounded-xl df-p-6">
+          <h2 class="df-text-xl df-font-semibold df-text-gray-900">
+            4. Additional Information
+          </h2>
+          <div>
+            <label
+              for="remarks"
+              class="df-block df-text-sm df-font-medium df-text-gray-700 df-mb-1"
+              >Special Instructions/Remarks</label
+            >
+            <textarea
+              id="remarks"
+              rows="3"
+              placeholder="Optional: Add any special instructions or remarks"
+              class="form-input"
+            ></textarea>
+          </div>
+        </section>
+
+        <!-- Agreement and Consent -->
+        <section class="df-space-y-6 df-bg-gray-50 df-rounded-xl df-p-6">
+          <h2 class="df-text-xl df-font-semibold df-text-gray-900">
+            5. Agreement and Consent
+          </h2>
+          <label class="df-flex df-items-start">
+            <input
+              type="checkbox"
+              required
+              class="df-mt-1 df-w-4 df-h-4 df-text-primary-600 df-border-gray-300 df-rounded"
+            />
+            <span class="df-ml-2 df-text-sm df-text-gray-700">
+              I confirm that the donated food is safe for consumption and
+              adheres to local safety regulations.
+            </span>
+          </label>
+        </section>
+
+        <button type="submit" class="df-w-full btn btn-primary">
+          Submit Donation
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'js/donation_form.js' %}"></script>
+</div>

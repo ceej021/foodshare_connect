@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FoodShare Connect{% endblock %}</title>
+    {% load static %}
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Additional CSS -->
+    {% block extra_css %}{% endblock %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            prefix: 'df-',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/favicon/site.webmanifest' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <span>FoodShare Connect</span>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="{% url 'index' %}" {% if request.path == '/' %}class="active"{% endif %}>Home</a></li>
+                <li><a href="{% url 'donate' %}" {% if 'donate' in request.path %}class="active"{% endif %}>Donate</a></li>
+                {% if user.is_authenticated %}
+                    <li class="user-menu">
+                        <div class="user-profile">
+                            <span class="username">{{ user.username }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="#" class="profile-link">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                            <a href="#" class="settings-link">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                            <a href="{% url 'logout' %}" class="logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="notifications">
+                        <div class="notification-wrapper">
+                            <button class="notification-btn" aria-label="Notifications">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-count">3</span>
+                            </button>
+                            <div class="notification-dropdown">
+                                <div class="notification-header">
+                                    <h3>Notifications</h3>
+                                    <span class="notification-count-text">3 unread</span>
+                                </div>
+                                <div class="notification-list">
+                                    <!-- Empty State -->
+                                    <div class="notification-empty hidden">
+                                        <i class="fas fa-bell-slash"></i>
+                                        <p>No notifications yet</p>
+                                    </div>
+                                    
+                                    <!-- Loading State -->
+                                    <div class="notification-loading hidden">
+                                        <div class="loading-spinner"></div>
+                                        <p>Loading notifications...</p>
+                                    </div>
+                                    
+                                    <!-- Notification Items -->
+                                    <div class="notification-items">
+                                        <div class="notification-item unread" data-notification-id="1">
+                                            <div class="notification-icon">
+                                                <i class="fas fa-gift"></i>
+                                            </div>
+                                            <div class="notification-content">
+                                                <p class="notification-text">Your donation #DON-001 has been approved</p>
+                                                <span class="notification-time">2 minutes ago</span>
+                                            </div>
+                                            <div class="notification-status"></div>
+                                        </div>
+                                        <div class="notification-item unread" data-notification-id="2">
+                                            <div class="notification-icon">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="notification-content">
+                                                <p class="notification-text">Pickup scheduled for donation #DON-002</p>
+                                                <span class="notification-time">1 hour ago</span>
+                                            </div>
+                                            <div class="notification-status"></div>
+                                        </div>
+                                        <div class="notification-item" data-notification-id="3">
+                                            <div class="notification-icon">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div>
+                                            <div class="notification-content">
+                                                <p class="notification-text">Welcome to FoodShare Connect!</p>
+                                                <span class="notification-time">1 day ago</span>
+                                            </div>
+                                            <div class="notification-status"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="notification-footer">
+                                    <button class="mark-all-read">Mark all as read</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% else %}
+                    <li><button id="loginBtn" class="btn-login">Login</button></li>
+                    <li><button id="signupBtn" class="btn-signup">Sign Up</button></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    {% block footer %}
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <p>FoodShare Connect bridges the gap between food surplus and scarcity.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'donate' %}">Donate</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>Email: info@foodshareconnect.com</p>
+                <p>Phone: (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 FoodShare Connect. All rights reserved.</p>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- Auth Modals -->
+    {% include 'includes/auth_modals.html' %}
+
+    <!-- Base JavaScript -->
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/auth.js' %}"></script>
+    <!-- Additional JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

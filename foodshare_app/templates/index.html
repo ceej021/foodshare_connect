@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}FoodShare Connect - Share Food, Share Hope{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Share Food, Share Hope</h1>
+            <p>Join our mission to reduce food waste and help those in need. Every donation makes a difference.</p>
+            <button class="cta-button">Start Donating</button>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2>How It Works</h2>
+        <div class="feature-cards">
+            <div class="feature-card">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h3>Donate Food</h3>
+                <p>Share your surplus food with those who need it most.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-truck"></i>
+                <h3>Easy Logistics</h3>
+                <p>Choose between NGO pickup or self-arrangement.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Track Impact</h3>
+                <p>Monitor your contributions and their impact.</p>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/index.js' %}"></script>
+<script src="{% static 'js/auth.js' %}"></script>
+{% endblock %}
