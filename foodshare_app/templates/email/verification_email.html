@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!--[if mso]>
+    <style>
+        .button {
+            background: #3498db !important;
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+    </style>
+    <![endif]-->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,32 +23,48 @@
         }
         .button {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #4F46E5;
-            color: white;
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: #ffffff !important;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
             margin: 20px 0;
+            font-weight: 500;
+            font-size: 16px;
+            text-align: center;
         }
         .footer {
             margin-top: 30px;
             font-size: 12px;
             color: #666;
         }
+        /* Ensure link color in the button stays white */
+        .button:link,
+        .button:visited,
+        .button:hover,
+        .button:active {
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+        /* Fallback link style for the URL below the button */
+        .link-url {
+            color: #3498db;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Welcome to FoodShare Connect!</h2>
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">Welcome to FoodShare Connect!</h2>
         <p>Hi {{ user.username }},</p>
         <p>Thank you for registering with FoodShare Connect. To complete your registration and verify your email address, please click the button below:</p>
         
-        <a href="{{ verification_url }}" class="button">Verify Email Address</a>
+        <a href="{{ verification_url }}" class="button" style="background-color: #3498db; color: #ffffff !important; text-decoration: none;">Verify Email Address</a>
         
         <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
-        <p>{{ verification_url }}</p>
+        <p class="link-url">{{ verification_url }}</p>
         
-        <p>This verification link will expire in 24 hours.</p>
+        <p style="color: #666; font-size: 14px;">This verification link will expire in 24 hours.</p>
         
         <div class="footer">
             <p>If you didn't create an account with FoodShare Connect, you can safely ignore this email.</p>

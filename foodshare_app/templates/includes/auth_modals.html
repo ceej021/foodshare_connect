@@ -43,7 +43,9 @@
         <button type="submit" class="btn-primary">Login</button>
       </form>
       <div class="form-footer">
-        <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+        <p>
+          Don't have an account? <a href="#" id="switchToSignup">Sign Up</a>
+        </p>
       </div>
     </div>
   </div>
@@ -144,10 +146,14 @@
               >You must agree to the Terms & Conditions</span
             >
           </div>
-          <button type="submit" class="btn-primary">Sign Up</button>
+          <button type="submit" class="btn-primary">
+            <span class="button-text">Create Account</span>
+          </button>
         </form>
         <div class="form-footer">
-          <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+          <p>
+            Already have an account? <a href="#" id="switchToLogin">Login</a>
+          </p>
         </div>
       </div>
     </div>
@@ -158,12 +164,30 @@
 <div id="registrationSuccessModal" class="modal">
   <div class="modal-content success-modal">
     <div class="success-animation-container">
-      <!-- Loading Animation -->
-      <div class="loading-spinner" style="display: none">
-        <div class="spinner"></div>
+      <div class="success-icon">
+        <svg
+          class="checkmark"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 80 80"
+        >
+          <circle
+            class="checkmark-circle"
+            cx="40"
+            cy="40"
+            r="38"
+            fill="#16a34a"
+          />
+          <path
+            class="checkmark-check"
+            d="M22 40l12 12 25-25"
+            stroke="#fff"
+            stroke-width="3"
+            fill="none"
+          />
+        </svg>
       </div>
     </div>
-    <div class="success-content text-center">
+    <div class="success-content text-center" style="opacity: 0">
       <h2 class="success-title">Registration Successful!</h2>
       <p class="success-message">
         Thank you for joining FoodShare Connect! We've sent a verification link
@@ -306,19 +330,6 @@
 
   .password-requirements li {
     margin-bottom: 0.125rem;
-  }
-
-  /* Checkbox Styling */
-  .checkbox-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .checkbox-wrapper input[type="checkbox"] {
-    width: auto;
-    margin: 0;
   }
 
   /* Form Footer */
@@ -552,19 +563,8 @@
   /* Add these styles to your existing styles */
   .checkbox-wrapper {
     display: flex;
-    align-items: center;
+    align-items: left;
     gap: 0.5rem;
-  }
-
-  .form-group.checkbox {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .form-group.checkbox input[type="checkbox"] {
-    width: auto;
-    margin: 0;
   }
 
   .form-group.checkbox .error-text {
@@ -656,36 +656,47 @@
     color: #10b981;
   }
 
-  /* Loading State Styles */
-  .btn-primary.loading {
+  /* Button Loading State */
+  .btn-primary {
     position: relative;
-    color: transparent;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+
+  .btn-primary.loading .button-text {
+    opacity: 0;
   }
 
   .btn-primary.loading::after {
     content: "";
     position: absolute;
-    left: 50%;
+    width: 16px;
+    height: 16px;
     top: 50%;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #fff;
+    left: 50%;
+    margin-top: -8px;
+    margin-left: -8px;
     border-radius: 50%;
+    border: 2px solid #ffffff;
     border-top-color: transparent;
     animation: spin 1s linear infinite;
-    transform: translate(-50%, -50%);
   }
 
-  /* Improve Input Focus States */
-  .form-group input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
-  .form-group.error input:focus {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* Debug Styles */
@@ -803,6 +814,89 @@
 
   .debug-info .copy-btn.copied {
     background: #27ae60;
+  }
+
+  .success-content {
+    transition: opacity 0.3s ease-out;
+  }
+
+  .success-content.fade-in {
+    opacity: 1 !important;
+  }
+
+  /* Update checkbox styles */
+  .form-group.checkbox {
+    margin-bottom: 1.5rem;
+  }
+
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .checkbox-wrapper input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    border: 2px solid #e5e7eb;
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    background: white;
+    flex-shrink: 0;
+  }
+
+  .checkbox-wrapper input[type="checkbox"]:checked {
+    background-color: #3498db;
+    border-color: #3498db;
+  }
+
+  .checkbox-wrapper input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .checkbox-wrapper input[type="checkbox"]:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+
+  .checkbox-wrapper label {
+    font-size: 0.9rem;
+    color: #4a5568;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* Error state for checkbox */
+  .form-group.checkbox.error .checkbox-wrapper input[type="checkbox"] {
+    border-color: #dc2626;
+  }
+
+  .form-group.checkbox.error .checkbox-wrapper input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+  }
+
+  .form-group.checkbox .error-text {
+    display: none;
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    margin-left: 28px;
+  }
+
+  .form-group.checkbox.error .error-text {
+    display: block;
   }
 </style>
 
@@ -977,7 +1071,7 @@
 
       const debugInfo = document.querySelector(".debug-info");
       const debugText = JSON.stringify(debugData, null, 2);
-      
+
       debugInfo.innerHTML = `
         <div style="margin-bottom: 10px;">
             <strong>Press Alt+D to toggle debug view</strong>
@@ -1048,12 +1142,12 @@
   function copyDebugInfo(btn) {
     const debugInfo = document.querySelector(".debug-info pre").textContent;
     navigator.clipboard.writeText(debugInfo).then(() => {
-        btn.textContent = "Copied!";
-        btn.classList.add("copied");
-        setTimeout(() => {
-            btn.textContent = "Copy Info";
-            btn.classList.remove("copied");
-        }, 2000);
+      btn.textContent = "Copied!";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = "Copy Info";
+        btn.classList.remove("copied");
+      }, 2000);
     });
   }
 </script>

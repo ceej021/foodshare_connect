@@ -225,54 +225,72 @@ th {
   background: #2980b9;
 }
 
-/* Donation Details Modal Styles */
-.modal {
+/* Reset and rebuild modal styles */
+.modal#donationDetailsModal {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1050;
-  overflow-y: auto;
 }
 
-.modal .modal-content {
-  position: relative;
-  width: 90%;
-  max-width: 800px;
-  margin: 2rem auto;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  transform: translateY(0);
-  opacity: 1;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.modal.show {
+.modal#donationDetailsModal.show {
   display: block;
 }
 
-.modal.show .modal-content {
-  transform: translateY(0);
-  opacity: 1;
+.modal#donationDetailsModal .modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  overflow-y: auto;
 }
 
-.modal .close {
+.modal#donationDetailsModal .close {
   position: absolute;
-  right: 1.5rem;
-  top: 1.5rem;
-  font-size: 1.5rem;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.25rem;
   color: #666;
   cursor: pointer;
   transition: color 0.3s ease;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1060;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
-.modal .close:hover {
+.modal#donationDetailsModal .close:hover {
   color: #333;
+  background: #f0f0f0;
+}
+
+/* Reset any potential conflicting styles */
+.modal#donationDetailsModal * {
+  box-sizing: border-box;
+}
+
+.modal#donationDetailsModal .modal-content > * {
+  margin: initial;
+  position: relative;
 }
 
 .donation-details {
@@ -376,50 +394,73 @@ th {
 }
 
 .food-items h4 {
-  color: #2c3e50;
   margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #2c3e50;
 }
 
-.food-items table {
+.table-responsive {
+  overflow-x: auto;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+.table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
+  margin-bottom: 1rem;
+  background-color: white;
 }
 
-.food-items th,
-.food-items td {
-  padding: 1rem;
+.table th,
+.table td {
+  padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.food-items th {
-  background: #f8f9fa;
+.table th {
+  background-color: #f8f9fa;
   font-weight: 600;
   color: #2c3e50;
 }
 
-.thumbnail {
+.table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.food-item-photo {
   width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 4px;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s;
 }
 
-.thumbnail:hover {
+.food-item-photo:hover {
   transform: scale(1.1);
 }
 
-.no-image {
-  color: #999;
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
   font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.completed {
+  background-color: #cce5ff;
+  color: #004085;
 }
 
 /* Food Item Styles */
@@ -689,4 +730,103 @@ th {
 
 .food-items h4 i {
     color: #3498db;
+}
+
+/* More compact spacing */
+.modal#donationDetailsModal .donation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal#donationDetailsModal .info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.modal#donationDetailsModal .info-section {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.modal#donationDetailsModal .info-section h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.modal#donationDetailsModal .info-content p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.modal#donationDetailsModal .food-items {
+  margin-top: 1rem;
+}
+
+.modal#donationDetailsModal .table {
+  font-size: 0.9rem;
+}
+
+.modal#donationDetailsModal .table th,
+.modal#donationDetailsModal .table td {
+  padding: 0.5rem;
+}
+
+.modal#donationDetailsModal .food-item-photo {
+  width: 40px;
+  height: 40px;
+}
+
+.modal#donationDetailsModal .close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.25rem;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1060;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Custom scrollbar for better appearance */
+.modal#donationDetailsModal .modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal#donationDetailsModal .modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.modal#donationDetailsModal .modal-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.modal#donationDetailsModal .modal-content::-webkit-scrollbar-thumb:hover {
+  background: #666;
 }

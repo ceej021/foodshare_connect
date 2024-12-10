@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('donationDetailsModal');
+    const closeBtn = modal.querySelector('.close');
+    
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+    
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    
     initializeModals();
     initializeNavigation();
     initializeViewButtons();
@@ -67,7 +80,7 @@ function initializeViewButtons() {
                             <div class="donation-header">
                                 <div class="donation-id">
                                     <h3>#${donation.donation_no}</h3>
-                                    <span class="status-badge ${donation.status}">
+                                    <span class="status-badge ${donation.status.toLowerCase()}">
                                         ${donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
                                     </span>
                                 </div>
@@ -112,39 +125,40 @@ function initializeViewButtons() {
 
                             <div class="food-items">
                                 <h4><i class="fas fa-box-open"></i> Food Items</h4>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Item Name</th>
-                                            <th>Category</th>
-                                            <th>Quantity</th>
-                                            <th>Condition</th>
-                                            <th>Expiration Date</th>
-                                            <th>Photo</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${donation.food_items.map(item => `
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
                                             <tr>
-                                                <td>${item.name}</td>
-                                                <td>${item.category}</td>
-                                                <td>${item.quantity}</td>
-                                                <td>${item.condition}</td>
-                                                <td>${item.expiration_date}</td>
-                                                <td>
-                                                    ${item.photo 
-                                                        ? `<img src="${item.photo}" alt="Food item photo" class="thumbnail" onclick="expandImage(this)">`
-                                                        : `<span class="no-image">No image</span>`
-                                                    }
-                                                </td>
+                                                <th>Item Name</th>
+                                                <th>Category</th>
+                                                <th>Quantity</th>
+                                                <th>Condition</th>
+                                                <th>Expiration Date</th>
+                                                <th>Photo</th>
                                             </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            ${donation.food_items.map(item => `
+                                                <tr>
+                                                    <td>${item.name}</td>
+                                                    <td>${item.category}</td>
+                                                    <td>${item.quantity} ${item.unit}</td>
+                                                    <td>${item.condition}</td>
+                                                    <td>${item.expiration_date}</td>
+                                                    <td>
+                                                        ${item.photo ? `
+                                                            <img src="${item.photo}" alt="${item.name}" class="food-item-photo">
+                                                        ` : 'No photo'}
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     `;
-                    modal.style.display = 'block';
+                    modal.classList.add('show');
                 } else {
                     alert('Error loading donation details');
                 }
@@ -267,4 +281,105 @@ function updateRecentDonationsInfo() {
         infoText.innerHTML = 'Showing 5 most recent donations';
         recentDonationsContainer.appendChild(infoText);
     }
+}
+
+function debugModalPositioning() {
+    const modal = document.querySelector('#donationDetailsModal');
+    const content = modal.querySelector('.modal-content');
+    
+    // Add visual debug outline
+    content.style.outline = '2px solid red';
+    
+    // Create debug overlay
+    const debugOverlay = document.createElement('div');
+    debugOverlay.style.cssText = `
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px;
+        font-family: monospace;
+        z-index: 9999;
+        pointer-events: none;
+    `;
+    document.body.appendChild(debugOverlay);
+
+    function updateDebug() {
+        const contentRect = content.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(content);
+        
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const contentCenterX = contentRect.left + contentRect.width / 2;
+        const contentCenterY = contentRect.top + contentRect.height / 2;
+        
+        debugOverlay.innerHTML = `
+            <div style="font-size: 12px;">
+                <strong>Modal Position Debug</strong><br>
+                Position: ${computedStyle.position}<br>
+                Top: ${computedStyle.top}<br>
+                Left: ${computedStyle.left}<br>
+                Transform: ${computedStyle.transform}<br>
+                Margin: ${computedStyle.margin}<br>
+                Offset from center: ${Math.round(centerX - contentCenterX)}px, ${Math.round(centerY - contentCenterY)}px
+            </div>
+        `;
+        
+        console.log('Modal Debug:', {
+            viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight
+            },
+            content: {
+                rect: contentRect,
+                style: {
+                    position: computedStyle.position,
+                    top: computedStyle.top,
+                    left: computedStyle.left,
+                    transform: computedStyle.transform,
+                    margin: computedStyle.margin
+                },
+                centerOffset: {
+                    x: centerX - contentCenterX,
+                    y: centerY - contentCenterY
+                }
+            }
+        });
+    }
+
+    // Update on various events
+    const update = () => requestAnimationFrame(updateDebug);
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update);
+    
+    // Initial update
+    updateDebug();
+
+    // Return cleanup function
+    return () => {
+        window.removeEventListener('resize', update);
+        window.removeEventListener('scroll', update);
+        debugOverlay.remove();
+        content.style.outline = '';
+    };
+}
+
+function viewDonationDetails(donationId) {
+    const modal = document.getElementById('donationDetailsModal');
+    const detailsContainer = document.getElementById('donationDetails');
+    
+    // ... existing code ...
+    
+    modal.classList.add('show');
+    
+    // Start debug visualization
+    const cleanup = debugModalPositioning();
+    
+    // Cleanup debug on modal close
+    const closeBtn = modal.querySelector('.close');
+    closeBtn.addEventListener('click', () => {
+        cleanup();
+        modal.classList.remove('show');
+    });
 }

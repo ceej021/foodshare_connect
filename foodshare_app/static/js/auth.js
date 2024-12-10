@@ -54,11 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
     btn.addEventListener("click", function () {
       const modal = this.closest('.modal');
       hideModal(modal);
-      // Reset forms when closing modals
-      loginForm?.reset();
-      signupForm?.reset();
-      // Re-enable submit buttons
-      enableSubmitButtons();
+      // Reset form state when closing modal
+      const form = modal.querySelector('form');
+      resetFormState(form);
     });
   });
 
@@ -66,11 +64,9 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener("click", (e) => {
     if (e.target.classList.contains("modal")) {
       hideModal(e.target);
-      // Reset forms when closing modals
-      loginForm?.reset();
-      signupForm?.reset();
-      // Re-enable submit buttons
-      enableSubmitButtons();
+      // Reset form state when closing modal
+      const form = e.target.querySelector('form');
+      resetFormState(form);
     }
   });
 
@@ -78,23 +74,21 @@ document.addEventListener("DOMContentLoaded", function () {
   switchToSignup?.addEventListener("click", (e) => {
     e.preventDefault();
     hideModal(loginModal);
-    setTimeout(() => showModal(signupModal), 300);
-    // Reset forms when switching
-    loginForm?.reset();
-    signupForm?.reset();
-    // Re-enable submit buttons
-    enableSubmitButtons();
+    setTimeout(() => {
+      showModal(signupModal);
+      // Reset login form state
+      resetFormState(loginForm);
+    }, 300);
   });
 
   switchToLogin?.addEventListener("click", (e) => {
     e.preventDefault();
     hideModal(signupModal);
-    setTimeout(() => showModal(loginModal), 300);
-    // Reset forms when switching
-    loginForm?.reset();
-    signupForm?.reset();
-    // Re-enable submit buttons
-    enableSubmitButtons();
+    setTimeout(() => {
+      showModal(loginModal);
+      // Reset signup form state
+      resetFormState(signupForm);
+    }, 300);
   });
 
   // Close modals on escape key
@@ -103,11 +97,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const visibleModal = document.querySelector('.modal[style*="display: block"]');
       if (visibleModal) {
         hideModal(visibleModal);
-        // Reset forms
-        loginForm?.reset();
-        signupForm?.reset();
-        // Re-enable submit buttons
-        enableSubmitButtons();
+        // Reset form state
+        const form = visibleModal.querySelector('form');
+        resetFormState(form);
       }
     }
   });
@@ -129,11 +121,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Update button loading state
   function setButtonLoading(button, isLoading) {
+    if (!button) return;
+    
     if (isLoading) {
-      button.classList.add('loading');
+        button.classList.add('loading');
+        button.disabled = true;
     } else {
-      button.classList.remove('loading');
+        button.classList.remove('loading');
+        button.disabled = false;
     }
   }
 
@@ -505,20 +502,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         const data = await response.json();
+        console.log('Registration response:', data);
         
         if (response.ok && data.success) {
+            console.log('Registration successful, clearing form');
             // Clear the form
             this.reset();
+            
+            console.log('Hiding signup modal');
             // Hide signup modal
             hideModal(document.getElementById('signupModal'));
+            
+            console.log('Showing registration success modal');
             // Show success modal
             showRegistrationSuccess(data.message);
         } else {
+            console.error('Registration error:', data.error);
             // Show error message in the modal
             showError(data.error || 'An error occurred during registration', this);
             
             // If it's a password-related error, clear password fields
             if (data.error && data.error.toLowerCase().includes('password')) {
+                console.log('Password error detected, clearing password fields');
                 this.querySelector('#signupPassword').value = '';
                 this.querySelector('#confirmPassword').value = '';
                 this.querySelector('#signupPassword').focus();
@@ -526,50 +531,45 @@ document.addEventListener("DOMContentLoaded", function () {
             
             // If it's a username error, focus username field
             if (data.error && data.error.toLowerCase().includes('username')) {
+                console.log('Username error detected, focusing username field');
                 this.querySelector('#signupUsername').focus();
             }
             
             // If it's an email error, focus email field
             if (data.error && data.error.toLowerCase().includes('email')) {
+                console.log('Email error detected, focusing email field');
                 this.querySelector('#signupEmail').focus();
             }
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Registration error:', error);
         showError('An error occurred. Please try again later.', this);
     } finally {
+        console.log('Registration process completed');
         setButtonLoading(submitButton, false);
     }
   });
 
   // Update the registration success function
   function showRegistrationSuccess(message) {
-    const successModal = document.getElementById('registrationSuccessModal');
-    if (!successModal) return;
+    // Reset signup form state before showing success
+    resetFormState(document.getElementById('signupForm'));
     
-    // Update success message if provided
+    const successModal = document.getElementById('registrationSuccessModal');
+    if (!successModal) {
+        console.error('Registration success modal not found');
+        return;
+    }
+    
+    // Rest of the existing success modal code...
     const successMessage = successModal.querySelector('.success-message');
     if (successMessage && message) {
         successMessage.textContent = message;
     }
     
-    // Show the modal
     successModal.style.display = 'block';
-    
-    // Get elements
-    const loadingSpinner = successModal.querySelector('.loading-spinner');
-    const successContent = successModal.querySelector('.success-content');
-    
-    // Initially show loading, hide success content
-    loadingSpinner.style.display = 'flex';
-    successContent.style.display = 'none';
-    
-    // After loading animation, show success content
-    setTimeout(() => {
-        loadingSpinner.style.display = 'none';
-        successContent.style.display = 'block';
-        successContent.classList.add('fade-in');
-    }, 2000); // Show loading for 2 seconds
+    successModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 
   // Add event listener for success modal login link
@@ -672,4 +672,89 @@ document.addEventListener("DOMContentLoaded", function () {
         setButtonLoading(submitButton, false);
     }
   });
+
+  // Add this function to reset form state completely
+  function resetFormState(form) {
+    if (!form) return;
+    
+    // Reset the form fields
+    form.reset();
+    
+    // Remove error classes from form groups
+    form.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('error');
+    });
+    
+    // Hide all error messages
+    form.querySelectorAll('.error-text').forEach(error => {
+        error.style.display = 'none';
+    });
+    
+    // Reset password requirements if it's the signup form
+    if (form.id === 'signupForm') {
+        // Reset password requirement indicators
+        form.querySelectorAll('.password-requirement').forEach(req => {
+            req.classList.remove('met', 'not-met');
+            // Reset the checkmark/x icons
+            const icon = req.querySelector('i');
+            if (icon) {
+                icon.className = 'fas fa-times';
+                icon.style.color = '#dc2626';
+            }
+        });
+
+        // Hide the password requirements container
+        const requirementsContainer = form.querySelector('.password-requirements');
+        if (requirementsContainer) {
+            requirementsContainer.style.display = 'none';
+        }
+
+        // Reset password strength meter if it exists
+        const strengthMeter = form.querySelector('.password-strength-meter');
+        if (strengthMeter) {
+            const strengthBar = strengthMeter.querySelector('.strength-bar');
+            if (strengthBar) {
+                strengthBar.style.width = '0';
+                strengthBar.style.backgroundColor = '#e5e7eb';
+            }
+            strengthMeter.className = 'password-strength-meter';
+        }
+    }
+    
+    // Hide error containers
+    const formId = form.id === 'loginForm' ? 'loginMessage' : 'signupMessage';
+    const errorContainer = document.getElementById(formId);
+    if (errorContainer) {
+        errorContainer.style.display = 'none';
+    }
+    
+    // Re-enable submit button
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.classList.remove('loading');
+    }
+  }
+
+  // Add password field focus/blur handlers
+  const passwordField = document.getElementById('signupPassword');
+  if (passwordField) {
+    // Show requirements on focus
+    passwordField.addEventListener('focus', function() {
+      const requirementsContainer = this.closest('form').querySelector('.password-requirements');
+      if (requirementsContainer) {
+        requirementsContainer.style.display = 'block';
+      }
+    });
+
+    // Hide requirements on blur if field is empty
+    passwordField.addEventListener('blur', function() {
+      if (!this.value) {
+        const requirementsContainer = this.closest('form').querySelector('.password-requirements');
+        if (requirementsContainer) {
+          requirementsContainer.style.display = 'none';
+        }
+      }
+    });
+  }
 });
