@@ -30,4 +30,9 @@ urlpatterns = [
     path('delete-donation/<str:donation_no>/', views.delete_donation, name='delete_donation'),
     path('get-all-food-items/', views.get_all_food_items, name='get_all_food_items'),
     path('update-food-item-status/', views.update_food_item_status, name='update_food_item_status'),
+    # New donor management endpoints
+    path('get_all_donors/', views.get_all_donors, name='get_all_donors'),
+    path('get_donor_donations/<int:donor_id>/', views.get_donor_donations, name='get_donor_donations'),
+    path('toggle_donor_status/<int:donor_id>/', views.toggle_donor_status, name='toggle_donor_status'),
+    path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
 ]

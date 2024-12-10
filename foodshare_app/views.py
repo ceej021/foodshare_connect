@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
 import json
 import base64
-from .models import FoodDonation, FoodItem
+from .models import FoodDonation, FoodItem, UserProfile
 from django.db.models import Count, Sum
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
@@ -23,6 +23,10 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import F
 from django.utils import timezone
 import datetime
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from django.template.loader import render_to_string
 
 logger = logging.getLogger(__name__)
 
@@ -97,91 +101,254 @@ def get_donation_details(request, donation_no):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+@require_http_methods(["POST"])
+@ensure_csrf_cookie
 def login_view(request):
-    """Handle user login authentication."""
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        next_url = request.POST.get('next', None)
+    """Handle user login with email verification check."""
+    email = request.POST.get('email')
+    password = request.POST.get('password')
+    next_url = request.POST.get('next', None)
 
+    # Validate input
+    if not email or not password:
+        return JsonResponse({
+            'success': False,
+            'error': 'Please enter both email and password.'
+        }, status=400)
+
+    try:
+        # First find the user by email
         try:
             user = User.objects.get(email=email)
-            user = authenticate(username=user.username, password=password)
-            if user is not None:
-                login(request, user)
-                request.session['fresh_login'] = True
+        except User.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'No account found with this email. Please check your email or sign up.'
+            }, status=401)
+
+        # Authenticate user
+        authenticated_user = authenticate(username=user.username, password=password)
+        
+        if authenticated_user is None:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid email or password. Please try again.'
+            }, status=401)
+
+        # Check if email is verified
+        try:
+            profile = UserProfile.objects.get(user=authenticated_user)
+            if not profile.email_verified:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Please verify your email before logging in. Check your inbox for the verification link.'
+                }, status=403)
+        except UserProfile.DoesNotExist:
+            # Create profile if it doesn't exist (for existing users)
+            UserProfile.objects.create(user=authenticated_user, email_verified=True)
+        
+        # Check if account is active
+        if not authenticated_user.is_active:
+            return JsonResponse({
+                'success': False,
+                'error': 'Your account has been disabled. Please contact support.'
+            }, status=403)
+
+        # Login successful
+        login(request, authenticated_user)
+        request.session['fresh_login'] = True
+        
+        # Determine redirect URL
+        if authenticated_user.is_staff or authenticated_user.is_superuser:
+            redirect_url = '/adminpage/'
+        else:
+            redirect_url = next_url if next_url else '/donate/'
+
+        return JsonResponse({
+            'success': True,
+            'redirect': redirect_url
+        })
+
+    except Exception as e:
+        logger.error(f'Login error: {str(e)}')
+        return JsonResponse({
+            'success': False,
+            'error': 'An error occurred. Please try again later.'
+        }, status=500)
+
+@require_http_methods(["POST"])
+@ensure_csrf_cookie
+def signup_view(request):
+    """Handle user registration with email verification."""
+    username = request.POST.get('username')
+    email = request.POST.get('email')
+    password = request.POST.get('password')
+    confirm_password = request.POST.get('confirmPassword')
+
+    logger.info('Signup attempt for user %s with email %s', username, email)
+
+    try:
+        # Validate required fields
+        if not all([username, email, password, confirm_password]):
+            return JsonResponse({
+                'success': False,
+                'error': 'All fields are required.'
+            }, status=400)
+
+        # Validate passwords match
+        if password != confirm_password:
+            return JsonResponse({
+                'success': False,
+                'error': 'Passwords do not match.'
+            }, status=400)
+
+        # Validate username length
+        if len(username) < 3:
+            return JsonResponse({
+                'success': False,
+                'error': 'Username must be at least 3 characters long.'
+            }, status=400)
+
+        # Validate username characters
+        if not username.isalnum():
+            return JsonResponse({
+                'success': False,
+                'error': 'Username can only contain letters and numbers.'
+            }, status=400)
+
+        # Validate email format
+        if '@' not in email or '.' not in email:
+            return JsonResponse({
+                'success': False,
+                'error': 'Please enter a valid email address.'
+            }, status=400)
+
+        # Validate password strength
+        if len(password) < 8:
+            return JsonResponse({
+                'success': False,
+                'error': 'Password must be at least 8 characters long.'
+            }, status=400)
+
+        if not any(c.isupper() for c in password):
+            return JsonResponse({
+                'success': False,
+                'error': 'Password must contain at least one uppercase letter.'
+            }, status=400)
+
+        if not any(c.islower() for c in password):
+            return JsonResponse({
+                'success': False,
+                'error': 'Password must contain at least one lowercase letter.'
+            }, status=400)
+
+        if not any(c.isdigit() for c in password):
+            return JsonResponse({
+                'success': False,
+                'error': 'Password must contain at least one number.'
+            }, status=400)
+
+        if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password):
+            return JsonResponse({
+                'success': False,
+                'error': 'Password must contain at least one special character.'
+            }, status=400)
+
+        # Use select_for_update() to lock the rows we're checking to prevent race conditions
+        with transaction.atomic():
+            # Check if user already exists - case insensitive check
+            if User.objects.filter(username__iexact=username).select_for_update().exists():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'This username is already taken. Please choose another.'
+                }, status=409)
+
+            if User.objects.filter(email__iexact=email).select_for_update().exists():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'An account with this email already exists.'
+                }, status=409)
+
+            # Create user
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                is_active=True  # Keep user active but require email verification
+            )
+            
+            # Profile will be created by the signal handler
+            profile = user.profile
+            
+            try:
+                # Generate verification URL
+                verification_url = request.build_absolute_uri(
+                    reverse('verify_email', args=[str(profile.verification_token)])
+                )
                 
-                if user.is_staff or user.is_superuser:
-                    return JsonResponse({
-                        'success': True,
-                        'redirect': '/adminpage/'
-                    })
+                # Prepare email content
+                subject = 'Verify your FoodShare Connect account'
+                html_message = render_to_string('email/verification_email.html', {
+                    'user': user,
+                    'verification_url': verification_url
+                })
+                plain_message = f'Hi {user.username},\n\nPlease verify your email by clicking this link: {verification_url}'
                 
-                redirect_url = next_url if next_url else '/donate/'
+                # Send verification email
+                send_mail(
+                    subject=subject,
+                    message=plain_message,
+                    html_message=html_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+
                 return JsonResponse({
                     'success': True,
-                    'redirect': redirect_url
+                    'message': 'Account created successfully! Please check your email for verification instructions.'
                 })
-                
-            return JsonResponse({'success': False, 'error': 'Invalid credentials'})
-        except ObjectDoesNotExist:
-            return JsonResponse({'success': False, 'error': 'User does not exist'})
 
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+            except Exception as e:
+                logger.error('Error sending verification email: %s', str(e))
+                # Don't delete the user if email fails, just notify them
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Account created successfully, but there was an issue sending the verification email. Please contact support.'
+                }, status=201)
 
-def signup_view(request):
-    """Handle user registration."""
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+    except Exception as e:
+        logger.error('Registration error: %s', str(e))
+        return JsonResponse({
+            'success': False,
+            'error': 'An error occurred during registration. Please try again later.'
+        }, status=500)
 
-        logger.info('Signup attempt for user %s with email %s', username, email)
-        logger.debug('POST data: %s', request.POST)
-
-        try:
-            if not all([username, email, password]):
-                logger.warning('Missing required fields')
-                return JsonResponse({'success': False, 'error': 'All fields are required'})
-
-            # Check if user already exists
-            if User.objects.filter(username=username).exists():
-                logger.warning('Username %s already exists', username)
-                return JsonResponse({'success': False, 'error': 'Username already exists'})
-
-            if User.objects.filter(email=email).exists():
-                logger.warning('Email %s already exists', email)
-                return JsonResponse({'success': False, 'error': 'Email already exists'})
-
-            # Create user within a transaction
-            with transaction.atomic():
-                # Create user
-                user = User.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=password
-                )
-                logger.info('User created successfully: %s (ID: %s)', user.username, user.id)
-
-                # Verify user was created
-                if not User.objects.filter(id=user.id).exists():
-                    logger.error('User creation verification failed for %s', username)
-                    return JsonResponse({'success': False, 'error': 'User creation failed'})
-
-                # Log the user in
-                login(request, user)
-                logger.info('User logged in: %s', user.username)
-
-                return JsonResponse({'success': True})
-
-        except IntegrityError as e:
-            logger.error('IntegrityError during signup: %s', str(e))
-            return JsonResponse({'success': False, 'error': 'Username or email already exists'})
-        except Exception as e:  # pylint: disable=broad-except
-            logger.error('Error during signup: %s', str(e))
-            return JsonResponse({'success': False, 'error': str(e)})
-
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+def verify_email(request, token):
+    """Handle email verification."""
+    try:
+        profile = UserProfile.objects.get(verification_token=token)
+        
+        # Check if token is expired (24 hours)
+        if timezone.now() > profile.token_created_at + timezone.timedelta(hours=24):
+            return render(request, 'verification_failed.html', {
+                'message': 'Verification link has expired. Please request a new one.'
+            })
+        
+        # Mark email as verified
+        profile.email_verified = True
+        profile.save()
+        
+        # Log the user in
+        login(request, profile.user)
+        
+        # Redirect to donate page with success parameter
+        return redirect(f'/donate/?verification=success')
+        
+    except UserProfile.DoesNotExist:
+        return render(request, 'verification_failed.html', {
+            'message': 'Invalid verification link.'
+        })
 
 def logout_view(request):
     """Handle user logout."""
@@ -844,3 +1011,72 @@ def delete_donation(request, donation_no):
     except Exception as e:
         logger.error(f'Error deleting donation: {str(e)}')
         return JsonResponse({'error': str(e)}, status=400)
+
+@login_required
+def get_all_donors(request):
+    """Get all users who are regular donors (not staff and not superusers)"""
+    try:
+        donors = User.objects.filter(is_staff=False, is_superuser=False).values(
+            'id', 'username', 'email', 'is_active', 'date_joined'
+        )
+        return JsonResponse({
+            'success': True,
+            'donors': list(donors)
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+@login_required
+def get_donor_donations(request, donor_id):
+    """Get all donations made by a specific donor"""
+    try:
+        donations = FoodDonation.objects.filter(donor_id=donor_id).values(
+            'donation_no',
+            'submission_date',
+            'status'
+        ).order_by('-submission_date')
+        
+        return JsonResponse({
+            'success': True,
+            'donations': list(donations)
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+@login_required
+def toggle_donor_status(request, donor_id):
+    """Toggle a donor's account status (active/inactive)"""
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False,
+            'error': 'Method not allowed'
+        }, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        is_active = data.get('is_active', False)
+        
+        donor = User.objects.get(id=donor_id)
+        donor.is_active = is_active
+        donor.save()
+        
+        return JsonResponse({
+            'success': True,
+            'is_active': donor.is_active
+        })
+    except User.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Donor not found'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)

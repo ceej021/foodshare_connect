@@ -6,6 +6,193 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
+<style>
+/* Debug Panel Styles */
+.debug-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 9999;
+    color: white;
+    font-family: monospace;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.debug-panel h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #3498db;
+}
+
+.debug-panel button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background: #3498db;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s ease;
+}
+
+.debug-panel button:last-child {
+    margin-bottom: 0;
+}
+
+.debug-panel button:hover {
+    background: #2980b9;
+}
+
+.debug-panel .toggle-btn {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    background: #2c3e50;
+    padding: 5px 10px;
+    border-radius: 4px 4px 0 0;
+    font-size: 11px;
+}
+
+/* Success Icon Animation */
+.success-icon {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.checkmark {
+    width: 80px;
+    height: 80px;
+}
+
+.checkmark-circle {
+    stroke: #16a34a;
+    stroke-width: 2;
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    fill: none;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Success Modal Styles */
+.success-modal {
+    max-width: 400px;
+    text-align: center;
+    padding: 2rem;
+}
+
+.success-animation-container {
+    margin-bottom: 1.5rem;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16a34a;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+}
+
+.success-content {
+    opacity: 1;
+    animation: fade-in 0.3s ease-out;
+}
+
+.success-title {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    color: #374151;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.verification-instructions {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
+
+.success-actions {
+    margin-top: 1.5rem;
+}
+
+.success-actions .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.success-actions .btn-primary:hover {
+    background: #2980b9;
+}
+
+.login-prompt {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.login-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Remove debug panel styles */
+.debug-panel,
+.debug-panel h3,
+.debug-panel button,
+.debug-panel .toggle-btn,
+.debug-panel-content {
+    display: none;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -39,9 +226,96 @@
         </div>
     </section>
 </main>
+
+<!-- Registration Success Modal -->
+<div id="registrationSuccessModal" class="modal">
+    <div class="modal-content success-modal">
+        <div class="success-animation-container">
+            <div class="success-icon">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+        </div>
+        <div class="success-content text-center">
+            <h2 class="success-title">Registration Successful!</h2>
+            <p class="success-message">
+                Account created successfully! Please check your
+                email for verification instructions.
+            </p>
+            <p class="verification-instructions">
+                Please check your inbox and click the verification link
+                to activate your account.
+            </p>
+            <div class="success-actions">
+                <p class="login-prompt">
+                    Already verified?
+                    <a href="#" onclick="showLoginModal()" class="login-link">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verification Success Modal -->
+<div id="verificationSuccessModal" class="modal">
+    <div class="modal-content success-modal">
+        <div class="success-animation-container">
+            <div class="success-icon">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+        </div>
+        <div class="success-content">
+            <h2 class="success-title">Welcome Aboard!</h2>
+            <p class="success-message">Your email has been successfully verified.</p>
+            <p class="verification-instructions">You now have full access to all features of FoodShare Connect!</p>
+            <div class="success-actions">
+                <button onclick="closeVerificationModal()" class="btn-primary">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/index.js' %}"></script>
 <script src="{% static 'js/auth.js' %}"></script>
+<script>
+// Remove debug panel functions
+function closeVerificationModal() {
+    const modal = document.getElementById('verificationSuccessModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+}
+
+function closeRegistrationModal() {
+    const modal = document.getElementById('registrationSuccessModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    }
+}
+
+function showLoginModal() {
+    closeRegistrationModal();
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+        loginBtn.click();
+    }
+}
+</script>
 {% endblock %}

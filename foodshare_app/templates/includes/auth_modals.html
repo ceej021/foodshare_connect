@@ -1,86 +1,1059 @@
 {% load static %}
 <!-- Login Modal -->
 <div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Login</h2>
-        <form id="loginForm">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="loginEmail">Email</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="loginEmail" name="email" required 
-                           placeholder="Enter your email address">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="loginPassword" name="password" required
-                           placeholder="Enter your password">
-                </div>
-            </div>
-            <div class="form-group checkbox">
-                <input type="checkbox" id="rememberMe">
-                <label for="rememberMe">Remember me</label>
-            </div>
-            <button type="submit" class="btn-primary">Login</button>
-        </form>
-        <div class="form-footer">
-            <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+  <div class="modal-content">
+    <div class="modal-scroll-container">
+      <span class="close">&times;</span>
+      <h2>Login</h2>
+      <div id="loginMessage" class="error-container">
+        <i class="fas fa-exclamation-circle"></i>
+        <div class="error-message"></div>
+        <div class="error-close">&times;</div>
+      </div>
+      <form id="loginForm" method="POST" action="/login/" novalidate>
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input
+              type="email"
+              id="loginEmail"
+              name="email"
+              required
+              placeholder="Enter your email address"
+            />
+          </div>
+          <span class="error-text">Please enter a valid email address</span>
         </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              name="password"
+              required
+              placeholder="Enter your password"
+            />
+          </div>
+          <span class="error-text">Please enter your password</span>
+        </div>
+        <button type="submit" class="btn-primary">Login</button>
+      </form>
+      <div class="form-footer">
+        <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Signup Modal -->
 <div id="signupModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
+  <div class="modal-content">
+    <div class="modal-scroll-container">
+      <span class="close">&times;</span>
+      <div id="signupFormContainer">
         <h2>Create Account</h2>
-        <form id="signupForm">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="signupUsername">Username</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="signupUsername" name="username" required
-                           placeholder="Choose a username">
-                </div>
+        <div id="signupMessage" class="error-container">
+          <i class="fas fa-exclamation-circle"></i>
+          <div class="error-message"></div>
+          <div class="error-close">&times;</div>
+        </div>
+        <form id="signupForm" novalidate>
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="signupUsername">Username</label>
+            <div class="input-with-icon">
+              <i class="fas fa-user"></i>
+              <input
+                type="text"
+                id="signupUsername"
+                name="username"
+                required
+                placeholder="Choose a username"
+              />
             </div>
-            <div class="form-group">
-                <label for="signupEmail">Email</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="signupEmail" name="email" required
-                           placeholder="Enter your email address">
-                </div>
+            <span class="error-text"
+              >Username must be at least 3 characters long</span
+            >
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input
+                type="email"
+                id="signupEmail"
+                name="email"
+                required
+                placeholder="Enter your email address"
+              />
             </div>
-            <div class="form-group">
-                <label for="signupPassword">Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="signupPassword" name="password" required
-                           placeholder="Create a strong password">
-                </div>
+            <span class="error-text">Please enter a valid email address</span>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input
+                type="password"
+                id="signupPassword"
+                name="password"
+                required
+                placeholder="Create a strong password"
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+              />
             </div>
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required
-                           placeholder="Confirm your password">
-                </div>
+            <div class="password-strength-meter">
+              <div class="strength-bar"></div>
             </div>
-            <div class="form-group checkbox">
-                <input type="checkbox" id="terms" name="terms">
-                <label for="terms">I agree to the Terms & Conditions</label>
+            <div class="password-requirements">
+              <p>Password must contain:</p>
+              <ul>
+                <li data-requirement="length">At least 8 characters</li>
+                <li data-requirement="uppercase">One uppercase letter</li>
+                <li data-requirement="lowercase">One lowercase letter</li>
+                <li data-requirement="number">One number</li>
+                <li data-requirement="special">One special character</li>
+              </ul>
             </div>
-            <button type="submit" class="btn-primary">Sign Up</button>
+            <span class="error-text">Password must meet all requirements</span>
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+                placeholder="Confirm your password"
+              />
+            </div>
+            <span class="error-text">Passwords do not match</span>
+          </div>
+          <div class="form-group checkbox">
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="terms" name="terms" required />
+              <label for="terms">I agree to the Terms & Conditions</label>
+            </div>
+            <span class="error-text"
+              >You must agree to the Terms & Conditions</span
+            >
+          </div>
+          <button type="submit" class="btn-primary">Sign Up</button>
         </form>
         <div class="form-footer">
-            <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+          <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
         </div>
+      </div>
     </div>
-</div> 
+  </div>
+</div>
+
+<!-- Registration Success Modal -->
+<div id="registrationSuccessModal" class="modal">
+  <div class="modal-content success-modal">
+    <div class="success-animation-container">
+      <!-- Loading Animation -->
+      <div class="loading-spinner" style="display: none">
+        <div class="spinner"></div>
+      </div>
+    </div>
+    <div class="success-content text-center">
+      <h2 class="success-title">Registration Successful!</h2>
+      <p class="success-message">
+        Thank you for joining FoodShare Connect! We've sent a verification link
+        to your email.
+      </p>
+      <p class="verification-instructions">
+        Please check your inbox and click the verification link to activate your
+        account.
+      </p>
+      <div class="success-actions">
+        <p class="login-prompt">
+          Already verified?
+          <a href="#" id="successModalLogin" class="login-link">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Modal Base */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+  }
+
+  .modal.show {
+    display: block !important;
+  }
+
+  /* Modal Content */
+  .modal-content {
+    position: absolute;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Scrollable Content Container */
+  .modal-scroll-container {
+    padding: 2rem;
+    overflow-y: auto;
+    /* Hide default scrollbar for WebKit browsers */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  /* Custom Scrollbar - WebKit browsers */
+  .modal-scroll-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .modal-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 1rem 0;
+  }
+
+  .modal-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    transition: background-color 0.2s;
+  }
+
+  .modal-scroll-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  /* Hide scrollbar when not hovering - Optional */
+  .modal-scroll-container {
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .modal-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .modal-scroll-container:hover {
+    scrollbar-width: thin; /* Firefox */
+  }
+
+  .modal-scroll-container:hover::-webkit-scrollbar {
+    display: block;
+  }
+
+  /* Form Layout */
+  .modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .modal-content h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+  }
+
+  .form-group {
+    margin: 0;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+  }
+
+  /* Password Requirements */
+  .password-requirements {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .password-requirements ul {
+    margin: 0.25rem 0 0 0;
+    padding-left: 1.25rem;
+  }
+
+  .password-requirements li {
+    margin-bottom: 0.125rem;
+  }
+
+  /* Checkbox Styling */
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .checkbox-wrapper input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+  }
+
+  /* Form Footer */
+  .form-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  /* Close Button */
+  .close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    z-index: 1;
+  }
+
+  .close:hover {
+    opacity: 1;
+  }
+
+  /* Error Messages */
+  .error-text {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Mobile Adjustments */
+  @media (max-width: 576px) {
+    .modal-content {
+      width: 95%;
+      padding: 1.5rem;
+    }
+  }
+
+  /* Custom Scrollbar */
+  .modal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .modal-content::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+
+  /* Success Modal Styles */
+  .success-modal {
+    max-width: 400px;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .success-animation-container {
+    margin-bottom: 1.5rem;
+  }
+
+  .success-title {
+    color: #16a34a;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .success-message {
+    color: #374151;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .verification-instructions {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .success-actions {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .login-prompt {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .login-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .login-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    margin: 0 auto;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid #16a34a;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Update Error Message Styles */
+  .error-container {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #991b1b;
+    font-size: 0.875rem;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120%);
+    z-index: 1100;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+
+  .error-container.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(calc(-100% - 1rem));
+  }
+
+  .error-container i {
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .error-container .error-message {
+    flex-grow: 1;
+    line-height: 1.25;
+    white-space: pre-line;
+    margin-right: 0.5rem;
+  }
+
+  .error-container .error-close {
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .error-container .error-close:hover {
+    opacity: 1;
+  }
+
+  /* Remove modal content overlay effect */
+  .modal-content.has-error {
+    pointer-events: auto;
+  }
+
+  /* Input Error Styles */
+  .form-group.error input {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+  }
+
+  .form-group.error label {
+    color: #dc2626;
+  }
+
+  .form-group .error-text {
+    display: none;
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 0.25rem;
+  }
+
+  .form-group.error .error-text {
+    display: block;
+  }
+
+  /* Update existing message containers */
+  .message-container {
+    display: none;
+  }
+
+  .message-container.show {
+    display: block;
+  }
+
+  /* Add these styles to your existing styles */
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-group.checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .form-group.checkbox input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+  }
+
+  .form-group.checkbox .error-text {
+    margin-left: 1.5rem;
+  }
+
+  .form-group.checkbox.error input[type="checkbox"] {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+  }
+
+  .form-group.checkbox.error label {
+    color: #dc2626;
+  }
+
+  /* Update modal content to handle floating error */
+  .modal-content {
+    position: relative;
+    padding-top: 1rem;
+  }
+
+  .modal h2 {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Add Password Strength Styles */
+  .password-strength-meter {
+    height: 4px;
+    background-color: #e5e7eb;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+
+  .strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+  .strength-weak .strength-bar {
+    width: 33.33%;
+    background-color: #ef4444;
+  }
+
+  .strength-medium .strength-bar {
+    width: 66.66%;
+    background-color: #f59e0b;
+  }
+
+  .strength-strong .strength-bar {
+    width: 100%;
+    background-color: #10b981;
+  }
+
+  .password-requirements {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    display: none;
+  }
+
+  .password-requirements.show {
+    display: block;
+  }
+
+  .password-requirements ul {
+    list-style: none;
+    padding-left: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .password-requirements li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+  }
+
+  .password-requirements li::before {
+    content: "×";
+    color: #ef4444;
+    margin-right: 0.5rem;
+    font-weight: bold;
+  }
+
+  .password-requirements li.valid::before {
+    content: "✓";
+    color: #10b981;
+  }
+
+  /* Loading State Styles */
+  .btn-primary.loading {
+    position: relative;
+    color: transparent;
+  }
+
+  .btn-primary.loading::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Improve Input Focus States */
+  .form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-group.error input:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  /* Debug Styles */
+  .modal.debug-outline {
+    border: 2px solid red;
+  }
+
+  .modal.debug-outline .modal-content {
+    border: 2px solid blue;
+  }
+
+  /* Center Guide Lines (for debugging) */
+  .debug-center-lines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;
+  }
+
+  .debug-center-lines::before,
+  .debug-center-lines::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+
+  .debug-center-lines::before {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+
+  .debug-center-lines::after {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+
+  /* Debug Visualization */
+  .debug-outline {
+    outline: 2px solid red !important;
+  }
+
+  .debug-outline .modal-content {
+    outline: 2px solid blue !important;
+  }
+
+  /* Debug Grid */
+  .debug-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .debug-grid::before,
+  .debug-grid::after {
+    content: "";
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0.2);
+  }
+
+  .debug-grid::before {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+
+  .debug-grid::after {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+
+  .debug-info {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    font-family: monospace;
+    z-index: 10000;
+    max-width: 400px;
+    font-size: 12px;
+    display: none;
+    border-radius: 4px;
+  }
+
+  .debug-info .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+  }
+
+  .debug-info .copy-btn:hover {
+    background: #2980b9;
+  }
+
+  .debug-info .copy-btn.copied {
+    background: #27ae60;
+  }
+</style>
+
+<div class="debug-center-lines"></div>
+
+<!-- Add debug elements -->
+<div class="debug-grid" style="display: none"></div>
+<div class="debug-info"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Calculate scrollbar width once
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty(
+      "--scrollbar-width",
+      `${scrollbarWidth}px`
+    );
+
+    // Modal functions
+    window.showModal = function (modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      // Reset styles
+      modal.style.cssText = "";
+      const content = modal.querySelector(".modal-content");
+      if (content) {
+        content.style.cssText =
+          "position: absolute; left: 50vw; top: 50vh; transform: translate(-50%, -50%);";
+      }
+
+      // Show modal
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    };
+
+    window.hideModal = function (modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    };
+
+    // Switch between modals
+    document
+      .getElementById("switchToSignup")
+      .addEventListener("click", function (e) {
+        e.preventDefault();
+        hideModal("loginModal");
+        setTimeout(() => showModal("signupModal"), 300);
+      });
+
+    document
+      .getElementById("switchToLogin")
+      .addEventListener("click", function (e) {
+        e.preventDefault();
+        hideModal("signupModal");
+        setTimeout(() => showModal("loginModal"), 300);
+      });
+
+    // Close on backdrop click
+    document.querySelectorAll(".modal").forEach((modal) => {
+      modal.addEventListener("click", function (e) {
+        if (e.target === this) {
+          hideModal(this.id);
+        }
+      });
+    });
+
+    // Close on ESC key
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        document.querySelectorAll(".modal.show").forEach((modal) => {
+          hideModal(modal.id);
+        });
+      }
+    });
+
+    // Close button handlers
+    document.querySelectorAll(".close").forEach((closeBtn) => {
+      closeBtn.addEventListener("click", function () {
+        hideModal(this.closest(".modal").id);
+      });
+    });
+
+    // Make showModal and hideModal available globally
+    window.showModal = showModal;
+    window.hideModal = hideModal;
+  });
+
+  // Debug Functions
+  function initializeDebugTools() {
+    const debugInfo = document.querySelector(".debug-info");
+    const debugGrid = document.querySelector(".debug-grid");
+    let isDebugging = false;
+
+    function toggleDebug() {
+      isDebugging = !isDebugging;
+      debugInfo.style.display = isDebugging ? "block" : "none";
+      debugGrid.style.display = isDebugging ? "block" : "none";
+      document.querySelectorAll(".modal").forEach((modal) => {
+        modal.classList.toggle("debug-outline", isDebugging);
+      });
+    }
+
+    function updateDebugInfo(modal) {
+      if (!isDebugging) return;
+
+      const modalRect = modal.getBoundingClientRect();
+      const contentRect = modal
+        .querySelector(".modal-content")
+        .getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(modal);
+      const contentStyle = window.getComputedStyle(
+        modal.querySelector(".modal-content")
+      );
+
+      // Get both browser zoom and device pixel ratio
+      const browserZoom = Math.round(
+        (window.outerWidth / window.innerWidth) * 100
+      );
+      const devicePixelRatio = window.devicePixelRatio;
+
+      const debugData = {
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          browserZoom: browserZoom + "%",
+          devicePixelRatio: Math.round(devicePixelRatio * 100) + "%",
+          effectiveZoom: Math.round(browserZoom * devicePixelRatio) + "%",
+        },
+        modal: {
+          display: computedStyle.display,
+          position: computedStyle.position,
+          dimensions: {
+            width: modalRect.width,
+            height: modalRect.height,
+            top: modalRect.top,
+            left: modalRect.left,
+          },
+          styles: {
+            alignItems: computedStyle.alignItems,
+            justifyContent: computedStyle.justifyContent,
+            transform: computedStyle.transform,
+            zIndex: computedStyle.zIndex,
+          },
+        },
+        content: {
+          dimensions: {
+            width: contentRect.width,
+            height: contentRect.height,
+            top: contentRect.top,
+            left: contentRect.left,
+          },
+          styles: {
+            position: contentStyle.position,
+            margin: contentStyle.margin,
+            transform: contentStyle.transform,
+          },
+          centerOffset: {
+            x: Math.round(
+              contentRect.left - (window.innerWidth - contentRect.width) / 2
+            ),
+            y: Math.round(
+              contentRect.top - (window.innerHeight - contentRect.height) / 2
+            ),
+          },
+        },
+      };
+
+      const debugInfo = document.querySelector(".debug-info");
+      const debugText = JSON.stringify(debugData, null, 2);
+      
+      debugInfo.innerHTML = `
+        <div style="margin-bottom: 10px;">
+            <strong>Press Alt+D to toggle debug view</strong>
+            <button class="copy-btn" onclick="copyDebugInfo(this)">Copy Info</button>
+        </div>
+        <pre>${debugText}</pre>
+      `;
+    }
+
+    // Monitor modal changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.target.classList.contains("modal")) {
+          updateDebugInfo(mutation.target);
+        }
+      });
+    });
+
+    document.querySelectorAll(".modal").forEach((modal) => {
+      observer.observe(modal, {
+        attributes: true,
+        attributeFilter: ["style", "class"],
+        childList: false,
+        subtree: false,
+      });
+    });
+
+    // Toggle debug with Alt+D
+    document.addEventListener("keydown", (e) => {
+      if (e.altKey && e.key.toLowerCase() === "d") {
+        toggleDebug();
+      }
+    });
+
+    // Update on window resize
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        document.querySelectorAll(".modal.show").forEach((modal) => {
+          updateDebugInfo(modal);
+        });
+      }, 250);
+    });
+
+    // Monitor modal show/hide
+    const originalShowModal = window.showModal;
+    window.showModal = function (modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      originalShowModal(modalId);
+      updateDebugInfo(modal);
+
+      // Log the call stack
+      console.log("showModal called for", modalId);
+      console.trace();
+    };
+  }
+
+  // Initialize debug tools after DOM loads
+  document.addEventListener("DOMContentLoaded", function () {
+    initializeDebugTools();
+    console.log("Debug tools initialized. Press Alt+D to toggle debug view.");
+  });
+
+  // Add copy functionality
+  function copyDebugInfo(btn) {
+    const debugInfo = document.querySelector(".debug-info pre").textContent;
+    navigator.clipboard.writeText(debugInfo).then(() => {
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(() => {
+            btn.textContent = "Copy Info";
+            btn.classList.remove("copied");
+        }, 2000);
+    });
+  }
+</script>

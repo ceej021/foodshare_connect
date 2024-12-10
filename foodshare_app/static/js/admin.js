@@ -3,89 +3,8 @@ const NOTIFICATIONS_PER_PAGE = 5;
 let currentPage = 1;
 let isLoadingMore = false;
 
-// Mock notifications data for demonstration
-const mockNotifications = [
-    {
-        id: 1,
-        title: "New Donation Request",
-        message: "A new donation has been submitted by John Doe",
-        timestamp: "2024-01-20T10:30:00",
-        isRead: false,
-        type: "donation"
-    },
-    {
-        id: 2,
-        title: "Food Item Expiring Soon",
-        message: "5 food items are expiring within 24 hours",
-        timestamp: "2024-01-20T09:15:00",
-        isRead: false,
-        type: "expiry"
-    },
-    {
-        id: 3,
-        title: "System Update",
-        message: "The system will undergo maintenance in 2 hours",
-        timestamp: "2024-01-20T08:00:00",
-        isRead: true,
-        type: "system"
-    },
-    {
-        id: 4,
-        title: "Donation Approved",
-        message: "Donation #1234 has been approved by the admin",
-        timestamp: "2024-01-19T15:30:00",
-        isRead: false,
-        type: "donation"
-    },
-    {
-        id: 5,
-        title: "New Food Category Added",
-        message: "A new food category 'Beverages' has been added to the system",
-        timestamp: "2024-01-19T14:20:00",
-        isRead: true,
-        type: "system"
-    },
-    {
-        id: 6,
-        title: "Multiple Items Expiring",
-        message: "10 items in the dairy category will expire soon",
-        timestamp: "2024-01-19T12:00:00",
-        isRead: false,
-        type: "expiry"
-    },
-    {
-        id: 7,
-        title: "Donation Completed",
-        message: "Donation #1235 has been successfully distributed",
-        timestamp: "2024-01-19T10:45:00",
-        isRead: true,
-        type: "donation"
-    },
-    {
-        id: 8,
-        title: "New User Registration",
-        message: "A new donor 'Jane Smith' has registered on the platform",
-        timestamp: "2024-01-19T09:30:00",
-        isRead: true,
-        type: "system"
-    },
-    {
-        id: 9,
-        title: "Storage Alert",
-        message: "Cold storage unit #2 temperature is above normal",
-        timestamp: "2024-01-19T08:15:00",
-        isRead: false,
-        type: "system"
-    },
-    {
-        id: 10,
-        title: "Weekly Summary",
-        message: "View your donation activity summary for this week",
-        timestamp: "2024-01-19T07:00:00",
-        isRead: true,
-        type: "system"
-    }
-];
+// Initialize empty notifications array
+const mockNotifications = [];
 
 function getNotificationIcon(type) {
     switch (type) {
@@ -123,121 +42,49 @@ function populateNotifications() {
     const notificationList = document.getElementById('notificationList');
     const notificationCount = document.getElementById('notificationCount');
     const unreadCountElement = document.getElementById('unreadCount');
-    const unreadCount = mockNotifications.filter(n => !n.isRead).length;
     
-    // Update notification count badge
-    if (unreadCount > 0) {
-        notificationCount.textContent = unreadCount;
-        notificationCount.classList.remove('hidden');
-        unreadCountElement.textContent = `${unreadCount} unread`;
-    } else {
+    // Hide notification count by default
+    if (notificationCount) {
         notificationCount.classList.add('hidden');
+    }
+    
+    // Set unread count text
+    if (unreadCountElement) {
         unreadCountElement.textContent = 'No unread';
     }
     
     // Clear existing notifications
-    notificationList.innerHTML = '';
-    
-    // Add notifications or show empty state
-    if (mockNotifications.length === 0) {
+    if (notificationList) {
         notificationList.innerHTML = `
-            <div class="p-4 text-center text-gray-500">
-                <i class="fas fa-bell-slash text-gray-400 text-xl mb-2"></i>
-                <p>No notifications at the moment</p>
+            <div class="flex flex-col items-center justify-center p-8 text-gray-500">
+                <i class="fas fa-bell-slash text-gray-400 text-3xl mb-3"></i>
+                <p class="text-sm">No notifications yet</p>
             </div>
         `;
-        return;
-    }
-    
-    // Get paginated notifications
-    const paginatedNotifications = mockNotifications.slice(0, currentPage * NOTIFICATIONS_PER_PAGE);
-    
-    // Add notifications
-    paginatedNotifications.forEach(notification => {
-        const notificationElement = document.createElement('div');
-        notificationElement.className = `p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-150 ${notification.isRead ? '' : 'bg-blue-50'}`;
-        
-        const icon = getNotificationIcon(notification.type);
-        
-        notificationElement.innerHTML = `
-            <div class="flex items-start space-x-3">
-                <div class="flex-shrink-0 pt-0.5">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 bg-opacity-10">
-                        <i class="${icon} text-blue-600"></i>
-                    </span>
-                </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-sm font-medium text-gray-900 ${notification.isRead ? '' : 'font-bold'}">
-                        ${notification.title}
-                    </p>
-                    <p class="mt-1 text-sm text-gray-500 line-clamp-2">
-                        ${notification.message}
-                    </p>
-                    <p class="mt-1 text-xs text-gray-400 flex items-center">
-                        <i class="fas fa-clock mr-1"></i>
-                        ${formatTimestamp(notification.timestamp)}
-                    </p>
-                </div>
-                <div class="flex-shrink-0 w-2">
-                    <div class="h-2 w-2 rounded-full ${notification.isRead ? 'bg-transparent' : 'bg-blue-600'}"></div>
-                </div>
-            </div>
-        `;
-        
-        notificationElement.addEventListener('click', (event) => markAsRead(notification.id, event));
-        notificationList.appendChild(notificationElement);
-    });
-    
-    // Add "Load More" button if there are more notifications
-    if (currentPage * NOTIFICATIONS_PER_PAGE < mockNotifications.length) {
-        const loadMoreButton = document.createElement('div');
-        loadMoreButton.className = 'p-3 text-center text-sm text-blue-600 hover:text-blue-800 hover:bg-gray-50 cursor-pointer border-t border-gray-100';
-        loadMoreButton.innerHTML = `
-            <span class="font-medium">Load More</span>
-            <span class="text-gray-500 ml-1">(${mockNotifications.length - (currentPage * NOTIFICATIONS_PER_PAGE)} remaining)</span>
-        `;
-        loadMoreButton.onclick = loadMoreNotifications;
-        notificationList.appendChild(loadMoreButton);
     }
 }
 
 function loadMoreNotifications() {
-    if (!isLoadingMore) {
-        isLoadingMore = true;
-        currentPage++;
-        populateNotifications();
-        isLoadingMore = false;
-    }
+    // Do nothing since we're not loading any notifications
 }
 
 function markAsRead(notificationId, event) {
-    // Prevent event from bubbling up to document click handler
-    event.stopPropagation();
-    
-    const notification = mockNotifications.find(n => n.id === notificationId);
-    if (notification) {
-        notification.isRead = true;
-    }
-    populateNotifications();
+    // Do nothing since we have no notifications to mark as read
 }
 
 function markAllAsRead() {
-    mockNotifications.forEach(notification => {
-        notification.isRead = true;
-    });
-    populateNotifications();
+    // Do nothing since we have no notifications to mark as read
 }
 
 // Initialize scroll handler for infinite scroll
 function initializeNotificationScroll() {
     const notificationList = document.getElementById('notificationList');
     
-    notificationList.addEventListener('scroll', () => {
-        if (!isLoadingMore && 
-            notificationList.scrollHeight - notificationList.scrollTop <= notificationList.clientHeight + 100) {
-            loadMoreNotifications();
-        }
-    });
+    if (notificationList) {
+        notificationList.addEventListener('scroll', () => {
+            // Do nothing since we have no notifications to load
+        });
+    }
 }
 
 // Reset notifications when closing dropdown
@@ -287,6 +134,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeNotificationScroll();
     populateNotifications();
     
+    // Initialize donor list if we're on the donor section
+    if (window.location.hash === '#donors' || document.getElementById('donorTableBody')) {
+        console.log('Initializing donor list...');
+        loadDonors();
+    }
+
+    // Add hash change listener for section navigation
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash;
+        console.log('Hash changed to:', hash);
+        showSection(hash.slice(1) || 'dashboard');
+    });
+    
     // Close notifications when clicking outside
     document.addEventListener('click', (e) => {
         const notificationBtn = document.getElementById('notificationBtn');
@@ -301,3 +161,279 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Function to load donors
+function loadDonors() {
+    console.log('Loading donors...');
+    fetch('/get_all_donors/')
+        .then(response => {
+            console.log('Donor response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Donor data received:', data);
+            const tableBody = document.getElementById('donorTableBody');
+            if (!tableBody) {
+                console.error('Donor table body not found in the DOM');
+                return;
+            }
+
+            tableBody.innerHTML = '';
+
+            if (data.success && data.donors && data.donors.length > 0) {
+                console.log('Found', data.donors.length, 'donors');
+                data.donors.forEach(donor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${donor.username}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${donor.email}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                            <button onclick="viewDonorDetails(${donor.id})" 
+                                    class="text-blue-600 hover:text-blue-900" 
+                                    title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="openEditDonorModal(${donor.id})" 
+                                    class="text-green-600 hover:text-green-900" 
+                                    title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="confirmDeleteDonor(${donor.id})" 
+                                    class="text-red-600 hover:text-red-900" 
+                                    title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button onclick="viewDonorDonations(${donor.id})" 
+                                    class="text-indigo-600 hover:text-indigo-900" 
+                                    title="View Donations">
+                                <i class="fas fa-gift"></i>
+                            </button>
+                            <button onclick="toggleDonorStatus(${donor.id}, ${donor.is_active})" 
+                                    class="text-${donor.is_active ? 'yellow' : 'green'}-600 hover:text-${donor.is_active ? 'yellow' : 'green'}-900" 
+                                    title="${donor.is_active ? 'Deactivate' : 'Activate'} Account">
+                                <i class="fas fa-${donor.is_active ? 'ban' : 'check-circle'}"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                console.log('No donors found or data.success is false');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                            No donors found
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading donors:', error);
+            const tableBody = document.getElementById('donorTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-red-500">
+                            Error loading donors. Please try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        });
+}
+
+// Function to view donor details
+function viewDonorDetails(donorId) {
+    fetch(`/get_donor/${donorId}/`)
+        .then(response => response.json())
+        .then(data => {
+            // Show donor details in a modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Donor Details</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Username</label>
+                                <p class="mt-1 text-sm text-gray-900">${data.username}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email</label>
+                                <p class="mt-1 text-sm text-gray-900">${data.email}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Account Status</label>
+                                <p class="mt-1 text-sm ${data.is_active ? 'text-green-600' : 'text-red-600'}">
+                                    ${data.is_active ? 'Active' : 'Inactive'}
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Join Date</label>
+                                <p class="mt-1 text-sm text-gray-900">${formatDate(data.date_joined)}</p>
+                            </div>
+                        </div>
+                        <div class="mt-5 flex justify-end">
+                            <button onclick="this.closest('.fixed').remove()" 
+                                    class="bg-gray-500 text-white px-4 py-2 rounded-lg">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        });
+}
+
+// Function to view donor's donations
+function viewDonorDonations(donorId) {
+    fetch(`/get_donor_donations/${donorId}/`)
+        .then(response => response.json())
+        .then(data => {
+            // Show donor's donations in a modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border max-w-4xl shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Donor's Donations</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Donation No.</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    ${data.donations.length > 0 ? 
+                                        data.donations.map(donation => `
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">${donation.donation_no}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">${formatDate(donation.submission_date)}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                        ${donation.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                                          donation.status === 'approved' ? 'bg-blue-100 text-blue-800' : 
+                                                          donation.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                                          'bg-red-100 text-red-800'}">
+                                                        ${donation.status}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                    <button onclick="viewDonationDetails('${donation.donation_no}')" 
+                                                            class="text-blue-600 hover:text-blue-900">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        `).join('') : 
+                                        `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No donations found</td></tr>`
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-5 flex justify-end">
+                            <button onclick="this.closest('.fixed').remove()" 
+                                    class="bg-gray-500 text-white px-4 py-2 rounded-lg">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        });
+}
+
+// Function to toggle donor's account status
+function toggleDonorStatus(donorId, currentStatus) {
+    fetch(`/toggle_donor_status/${donorId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            is_active: !currentStatus
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            loadDonors(); // Reload the donor list
+        } else {
+            alert('Error updating donor status');
+        }
+    });
+}
+
+// Add this to your existing showSection function
+function showSection(sectionId) {
+    // Hide all sections first
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.add('hidden');
+    });
+    
+    // Show the selected section
+    const selectedSection = document.getElementById(sectionId);
+    if (selectedSection) {
+        selectedSection.classList.remove('hidden');
+        
+        // Load specific section data if needed
+        if (sectionId === 'food-items-section') {
+            loadFoodItems();
+        } else if (sectionId === 'donors') {
+            loadDonors(); // Load donors when the section is shown
+        }
+    }
+}
+
+// Donor Modal Functions
+function showAddDonorModal() {
+    document.getElementById('addDonorModal').classList.remove('hidden');
+}
+
+function closeAddDonorModal() {
+    document.getElementById('addDonorModal').classList.add('hidden');
+    document.getElementById('addDonorForm').reset();
+}
+
+function openEditDonorModal(donorId) {
+    currentDonorId = donorId;
+    const modal = document.getElementById('editDonorModal');
+    modal.classList.remove('hidden');
+    
+    // Fetch donor details and populate form
+    fetch(`/get_donor/${donorId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('editDonorId').value = data.id;
+            document.getElementById('editUsername').value = data.username;
+            document.getElementById('editEmail').value = data.email;
+        });
+}
+
+function closeEditDonorModal() {
+    document.getElementById('editDonorModal').classList.add('hidden');
+    document.getElementById('editDonorForm').reset();
+    currentDonorId = null;
+}
+
+function confirmDeleteDonor(donorId) {
+    currentDonorId = donorId;
+    document.getElementById('deleteDonorModal').classList.remove('hidden');
+}
+
+function closeDonorDeleteModal() {
+    document.getElementById('deleteDonorModal').classList.add('hidden');
+    currentDonorId = null;
+}

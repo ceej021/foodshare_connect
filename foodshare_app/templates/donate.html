@@ -155,14 +155,21 @@
     </main>
 </div>
 
-<!-- Donation Details Modal -->
-<div id="donationDetailsModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Donation Details</h2>
-        <div id="donationDetails"></div>
-    </div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('verification') === 'success') {
+        // Show the verification success modal
+        const modal = document.getElementById('verificationSuccessModal');
+        if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        // Remove the parameter from URL without refreshing
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
+</script>
 {% endblock %}
 
 {% block extra_js %}

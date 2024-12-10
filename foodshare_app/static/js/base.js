@@ -59,8 +59,16 @@ function initializeModals() {
     const switchToLogin = document.getElementById('switchToLogin');
 
     // Helper function to show modal
-    window.showModal = function(modal) {
+    window.showModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+        
+        // Hide any visible modals first
+        hideAllModals();
+        
+        // Show the modal
         modal.style.display = 'flex';
+        modal.classList.add('show');
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
         
         // Focus first input in modal
@@ -72,6 +80,12 @@ function initializeModals() {
 
     // Helper function to hide modal
     function hideModal(modal) {
+        if (typeof modal === 'string') {
+            modal = document.getElementById(modal);
+        }
+        if (!modal) return;
+        
+        modal.classList.remove('show');
         modal.style.display = 'none';
         document.body.style.overflow = ''; // Restore scrolling
     }
@@ -86,12 +100,12 @@ function initializeModals() {
     // Open modals
     loginBtn?.addEventListener('click', (e) => {
         e.preventDefault();
-        showModal(loginModal);
+        showModal('loginModal');
     });
 
     signupBtn?.addEventListener('click', (e) => {
         e.preventDefault();
-        showModal(signupModal);
+        showModal('signupModal');
     });
 
     // Close modals
@@ -106,13 +120,13 @@ function initializeModals() {
     switchToSignup?.addEventListener('click', (e) => {
         e.preventDefault();
         hideModal(loginModal);
-        showModal(signupModal);
+        setTimeout(() => showModal('signupModal'), 300);
     });
 
     switchToLogin?.addEventListener('click', (e) => {
         e.preventDefault();
         hideModal(signupModal);
-        showModal(loginModal);
+        setTimeout(() => showModal('loginModal'), 300);
     });
 
     // Close modals when clicking outside
@@ -184,7 +198,7 @@ function initializeUserMenu() {
             // Update notification count
             const countBadge = document.querySelector('.notification-count');
             if (countBadge) {
-                countBadge.textContent = '0';
+                countBadge.classList.add('hidden');
             }
         });
 
@@ -199,6 +213,20 @@ function initializeUserMenu() {
         notificationDropdown.addEventListener('click', function(e) {
             e.stopPropagation();
         });
+
+        // Show empty state by default
+        const notificationItems = notificationDropdown.querySelector('.notification-items');
+        const notificationEmpty = notificationDropdown.querySelector('.notification-empty');
+        if (notificationItems && notificationEmpty) {
+            notificationItems.innerHTML = '';
+            notificationEmpty.classList.remove('hidden');
+        }
+
+        // Hide notification count by default
+        const countBadge = document.querySelector('.notification-count');
+        if (countBadge) {
+            countBadge.classList.add('hidden');
+        }
     }
 }
 
